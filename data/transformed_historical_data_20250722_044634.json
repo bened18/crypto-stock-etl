@@ -1,0 +1,18 @@
+[
+  {
+    "coin_id":"bitcoin",
+    "symbol":"BTC",
+    "name":"Bitcoin",
+    "price_usd":117256.9208222684,
+    "price_eur":100808.8235108455,
+    "price_btc":1.0,
+    "price_eth":31.196939361,
+    "market_cap_usd":2333757287859,
+    "market_cap_eur":2006986926170,
+    "market_cap_btc":19895096,
+    "total_volume_usd":36702153882,
+    "total_volume_eur":31553795948,
+    "total_volume_btc":313097,
+    "extraction_timestamp":"2025-07-22T04:46:34.589"
+  }
+]

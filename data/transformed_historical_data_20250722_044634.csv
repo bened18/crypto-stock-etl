@@ -1,0 +1,2 @@
+coin_id,symbol,name,price_usd,price_eur,price_btc,price_eth,market_cap_usd,market_cap_eur,market_cap_btc,total_volume_usd,total_volume_eur,total_volume_btc,extraction_timestamp
+bitcoin,BTC,Bitcoin,117256.9208222684,100808.82351084548,1.0,31.196939361011946,2333757287859,2006986926170,19895096,36702153882,31553795948,313097,2025-07-22 04:46:34.589375
