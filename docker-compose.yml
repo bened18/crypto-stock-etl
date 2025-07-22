@@ -1,0 +1,79 @@
+version: '3.8'
+
+services:
+  # PostgreSQL DB
+  postgres:
+    image: postgres:15
+    container_name: coingecko-postgres
+    environment:
+      POSTGRES_DB: coingecko_etl
+      POSTGRES_USER: coingecko_user
+      POSTGRES_PASSWORD: coingecko_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./data:/docker-entrypoint-initdb.d
+    networks:
+      - coingecko-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U coingecko_user -d coingecko_etl"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # FastAPI API REST
+  api:
+    build: .
+    container_name: coingecko-api
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./src:/app/src
+      - ./data:/app/data
+    environment:
+      - PYTHONPATH=/app
+      - PYTHONUNBUFFERED=1
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=coingecko_etl
+      - POSTGRES_USER=coingecko_user
+      - POSTGRES_PASSWORD=coingecko_password
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - coingecko-network
+    command: uvicorn src.api:app --host 0.0.0.0 --port 8000 --reload
+    restart: unless-stopped
+
+  # (ETL) Main Aplication
+  coingecko-extractor:
+    build: .
+    container_name: coingecko-extractor
+    volumes:
+      - ./src:/app/src
+      - ./data:/app/data
+    environment:
+      - PYTHONPATH=/app
+      - PYTHONUNBUFFERED=1
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=coingecko_etl
+      - POSTGRES_USER=coingecko_user
+      - POSTGRES_PASSWORD=coingecko_password
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - coingecko-network
+    command: python src/extract_coingecko.py
+    stdin_open: true
+    tty: true
+
+volumes:
+  postgres_data:
+
+networks:
+  coingecko-network:
+    driver: bridge 
